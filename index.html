@@ -1,0 +1,157 @@
+<!--
+ * @Description: 
+ * @Author: lxd
+ * @Date: 2021-02-06 14:14:36
+ * @LastEditors: lxd
+ * @LastEditTime: 2021-02-06 17:03:10
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .sudoku-wrap {
+        width: 330px;
+        height: 330px;
+        margin: 20px auto;
+      }
+      .sudoku-wrap li {
+        list-style: none;
+        float: left;
+        width: 100px;
+        height: 100px;
+        line-height: 100px;
+        text-align: center;
+        margin: 5px;
+        /* color: #ccffff; */
+        background-color: #fffccc;
+      }
+      .sudoku-wrap li.active {
+        background-color: #ffcccc;
+      }
+      .sudoku-wrap li:nth-of-type(4) {
+        position: relative;
+        left: 220px;
+      }
+      .sudoku-wrap li:nth-of-type(5) {
+        position: relative;
+        left: 110px;
+        top: 110px;
+      }
+      .sudoku-wrap li:nth-of-type(6) {
+        position: relative;
+        left: -110px;
+        top: 110px;
+      }
+      .sudoku-wrap li:nth-of-type(7) {
+        position: relative;
+        left: 0px;
+        top: 0px;
+      }
+      .sudoku-wrap li:nth-of-type(8) {
+        position: relative;
+        left: -110px;
+        top: -110px;
+      }
+      .sudoku-wrap li:nth-of-type(9) {
+        position: relative;
+        left: -110px;
+        top: -110px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <ul class="sudoku-wrap">
+      <li class="item">1</li>
+      <li class="item">2</li>
+      <li class="item">3</li>
+      <li class="item">4</li>
+      <li class="item">5</li>
+      <li class="item">6</li>
+      <li class="item">7</li>
+      <li class="item">8</li>
+      <li id="start-btn">开始</li>
+    </ul>
+    <script>
+      const times = 7 // 转7次后得到奖品
+      let curTimes = 0 // 当前转了第几圈
+      let lottery = false
+      let index = 0
+      let startIndex = 0
+      let lotteryIndex = 0 // 中奖索引
+      let speed = 200 // 转速
+
+      const doms = document.querySelectorAll('.item')
+      const dom = document.getElementById('start-btn')
+      dom.addEventListener('click', function () {
+        if (lottery) {
+          alert('抽奖进行中...')
+          return
+        }
+        lotteryIndex = Math.floor(Math.random() * 8)
+        console.log('中奖号码：', lotteryIndex + 1)
+        lottery = true
+        index = startIndex
+        startLottery()
+      })
+      function startLottery() {
+        doms[index].classList.add('active')
+        setTimeout(() => {
+          doms[index].classList.remove('active')
+          index += 1
+          if (index >= doms.length) {
+            index = 0
+          }
+          if (curTimes < 4 && speed > 60) {
+            console.log('加速')
+            speed -= 10
+          }
+          if (curTimes > 4) {
+            console.log('减速')
+            speed += 10
+          }
+
+          if (lotteryIndex - 4 < 0) {
+            if (
+              (curTimes === 6 && index >= lotteryIndex - 4 + 8) ||
+              curTimes === 7
+            ) {
+              console.log('大减速')
+              speed += 100
+            }
+          } else {
+            if (index >= lotteryIndex - 4 && curTimes === 7) {
+              console.log('大减速')
+              speed += 100
+            }
+          }
+          if (index === startIndex) {
+            // 转了一圈
+            console.log('转了一圈')
+            curTimes += 1
+          }
+          if (curTimes < times) {
+            startLottery()
+          } else if (curTimes === times) {
+            if (index === lotteryIndex) {
+              doms[lotteryIndex].classList.add('active')
+              startIndex = index
+              lottery = false
+              curTimes = 0
+              speed = 200
+
+              setTimeout(() => {
+                alert('中奖啦：' + parseInt(lotteryIndex + 1))
+              }, 0)
+            } else {
+              startLottery()
+            }
+          }
+        }, speed)
+      }
+    </script>
+  </body>
+</html>
